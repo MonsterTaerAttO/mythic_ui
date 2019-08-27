@@ -10,12 +10,32 @@ window.addEventListener('message', function (event) {
             $("#boxHeal").css("width", event.data.health + "%");
             $("#boxArmor").css("width", event.data.armor + "%");
             $("#boxStamina").css("width", event.data.stamina + "%");
+
+            if (event.data.speed < 10) {
+                $('.speed-val').html('00' + event.data.speed);
+            } else if(event.data.speed < 100 && event.data.speed >= 10) {
+                $('.speed-val').html('0' + event.data.speed);
+            } else { 
+                $('.speed-val').html(event.data.speed);
+            }
+
+            if(event.data.speed >= 100) {
+                $('.speed-val').addClass('fast');
+            } else {
+                $('.speed-val').removeClass('fast');
+            }
+
+            $('.clock').html(event.data.time + ' <span class="ampm">' + event.data.ampm + '</span>');
+
+            if (event.data.street2 !== '') {
+                $('.position').html(event.data.direction + ' <span class="seperator">|</span> ' + event.data.street1 + ' <span class="seperator2">-</span> ' + event.data.street2 + ' <span class="seperator">|</span> ' + event.data.area);
+            } else {
+                $('.position').html(event.data.direction + ' <span class="seperator">|</span> ' + event.data.street1 + ' <span class="seperator">|</span> ' + event.data.area);
+            }
             break;
         case 'display':
             cash = event.data.cash;
             bank = event.data.bank;
-    
-            console.log('$' + cash);
     
             $('.cash').html('$' + formatCurrency(cash));
             $('.bank').html('$' + formatCurrency(bank));
@@ -26,16 +46,16 @@ window.addEventListener('message', function (event) {
                 cash += event.data.amount;
     
                 $('.cash-change').append($element);
-                $('.cash').html('$' + formatCurrency(cash));
                 setTimeout(function() {
+                    $('.cash').html('$' + formatCurrency(cash));
                     $element.remove();
                 }, 1000);
             } else {
                 bank += event.data.amount;
                 
                 $('.bank-change').append($element);
-                $('.bank').html('$' + formatCurrency(bank));
                 setTimeout(function() {
+                    $('.bank').html('$' + formatCurrency(bank));
                     $element.remove();
                 }, 1000);
             }
@@ -44,16 +64,16 @@ window.addEventListener('message', function (event) {
             updateStatus(event.data.hunger, event.data.thirst);
             break;
         case 'hidecar':
-            $('.car').hide();
+            $('.car').fadeOut();
             break;
         case 'showcar':
-            $('.car').show();
+            $('.car').fadeIn();
             break;
         case 'showui':
-            $('body').show();
+            $('body').fadeIn();
             break;
         case 'hideui':
-            $('body').hide();
+            $('body').fadeOut();
             break;
         case 'toggle-seatbelt':
             if($('.seatbelt').hasClass('on')) {
@@ -106,31 +126,6 @@ window.addEventListener('message', function (event) {
                 $('.fuel-val').removeClass('low');
             }
 
-            break;
-        case 'update-speed':
-            if (event.data.speed < 25) {
-                $('.speed-val').html('00' + event.data.speed);
-            } else if(event.data.speed < 100 && event.data.speed >= 10) {
-                $('.speed-val').html('0' + event.data.speed);
-            } else { 
-                $('.speed-val').html(event.data.speed);
-            }
-
-            if(event.data.speed >= 100) {
-                $('.speed-val').addClass('fast');
-            } else {
-                $('.speed-val').removeClass('fast');
-            }
-            break;
-        case 'update-clock':
-            $('.clock').html(event.data.time + ' <span class="ampm">' + event.data.ampm + '</span>')
-            break;
-        case 'update-position':
-            if (event.data.street2 !== '') {
-                $('.position').html(event.data.direction + ' <span class="seperator">|</span> ' + event.data.street1 + ' <span class="seperator2">-</span> ' + event.data.street2 + ' <span class="seperator">|</span> ' + event.data.area);
-            } else {
-                $('.position').html(event.data.direction + ' <span class="seperator">|</span> ' + event.data.street1 + ' <span class="seperator">|</span> ' + event.data.area);
-            }
             break;
     }
 });

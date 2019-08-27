@@ -207,12 +207,12 @@ body {
     color: rgb(240, 200, 80);
 }
 
-.seatbelt.off, .cruise.off {
-    color: rgb(224, 50, 50);
-}
-
 .seatbelt.on, .cruise.on {
     color: rgb(114, 204, 114);
+}
+
+.seatbelt.off, .cruise.off {
+    color: rgb(224, 50, 50);
 }
 
 .position {

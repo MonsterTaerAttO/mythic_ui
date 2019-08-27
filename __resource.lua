@@ -14,6 +14,10 @@ files {
 	'html/fonts/gta-ui.ttf',
 	'html/js/app.js',
 	'html/index.html',
+
+    'html/css/jquery-ui.min.css',
+    'html/js/jquery.min.js',
+    'html/js/jquery-ui.min.js',
 }
 
 client_scripts {
@@ -23,6 +27,10 @@ client_scripts {
 
 server_scripts {
 	'server/main.lua',
+}
+
+dependencies {
+	'mythic_base',
 }
 
 exports {
