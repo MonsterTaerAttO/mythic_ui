@@ -22,6 +22,46 @@ local voice = {default = 7.0, shout = 16.0, whisper = 1.0, current = 0, level = 
 --[[ =========================================================================================================================== ]]--
 --[[ =========================================================================================================================== ]]--
 
+Callbacks = nil
+AddEventHandler('mythic_base:shared:ComponentsReady', function()
+    Callbacks = exports['mythic_base']:FetchComponent('Callbacks')
+end)
+
+AddEventHandler('onClientMapStart', function()
+    if voice.current == 0 then
+      NetworkSetTalkerProximity(voice.default)
+    elseif voice.current == 1 then
+      NetworkSetTalkerProximity(voice.shout)
+    elseif voice.current == 2 then
+      NetworkSetTalkerProximity(voice.whisper)
+    end  
+end)
+
+RegisterNetEvent('mythic_characters:client:Logout')
+AddEventHandler('mythic_characters:client:Logout', function()
+    isLoggedIn = false
+    SendNUIMessage({
+        action = 'hideui'
+    })
+end)
+
+RegisterNetEvent('mythic_base:client:CharacterSpawned')
+AddEventHandler('mythic_base:client:CharacterSpawned', function()
+    isLoggedIn = true
+    
+    Callbacks:ServerCallback('mythic_hud:server:GetMoneyStuff', {}, function(data)
+        SendNUIMessage({
+            action = 'display',
+            cash = data.cash,
+            bank = data.bank
+        })
+        SendNUIMessage({
+            action = 'showui'
+        })
+        UIStuff()
+    end)
+end)
+
 function CalculateTimeToDisplay()
 	hour = GetClockHours()
     minute = GetClockMinutes()
@@ -185,16 +225,6 @@ function UIStuff()
     end)
 end
 
-AddEventHandler('onClientMapStart', function()
-    if voice.current == 0 then
-      NetworkSetTalkerProximity(voice.default)
-    elseif voice.current == 1 then
-      NetworkSetTalkerProximity(voice.shout)
-    elseif voice.current == 2 then
-      NetworkSetTalkerProximity(voice.whisper)
-    end  
-end)
-
 RegisterNetEvent('mythic_engine:client:StartEngineListen')
 AddEventHandler('mythic_engine:client:StartEngineListen', function()
     local player = PlayerPedId()
@@ -329,36 +359,9 @@ AddEventHandler('mythic_engine:client:PlayerEnteringVeh', function(veh)
     })
 end)
 
-RegisterNetEvent('mythic_characters:client:CharacterSpawned')
-AddEventHandler('mythic_characters:client:CharacterSpawned', function()
-    TriggerServerEvent('mythic_hud:server:GetMoneyStuff')
-end)
-
 RegisterNetEvent('mythic_ui:client:ToggleUI')
 AddEventHandler('mythic_ui:client:ToggleUI', function()
     ToggleUI()
-end)
-
-RegisterNetEvent('mythic_hud:client:DisplayMoneyStuff')
-AddEventHandler('mythic_hud:client:DisplayMoneyStuff', function(cash, bank)
-    SendNUIMessage({
-        action = 'display',
-        cash = cash,
-        bank = bank
-    })
-    SendNUIMessage({
-        action = 'showui'
-    })
-    UIStuff()
-    isLoggedIn = true
-end)
-
-RegisterNetEvent('mythic_characters:client:Logout')
-AddEventHandler('mythic_characters:client:Logout', function()
-    SendNUIMessage({
-        action = 'hideui'
-    })
-    isLoggedIn = false
 end)
 
 RegisterNetEvent('mythic_hud:client:DisplayMoneyChange')
