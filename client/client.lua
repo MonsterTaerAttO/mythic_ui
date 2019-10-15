@@ -14,7 +14,6 @@ local prevVelocity = {x = 0.0, y = 0.0, z = 0.0}
 local cruiseIsOn = false
 local seatbeltEjectSpeed = 45               -- Speed threshold to eject player (MPH)
 local seatbeltEjectAccel = 100              -- Acceleration threshold to eject player (G's)
-local voice = {default = 7.0, shout = 16.0, whisper = 1.0, current = 0, level = nil}
 
 --[[ =========================================================================================================================== ]]--
 --[[ =========================================================================================================================== ]]--
@@ -25,16 +24,6 @@ local voice = {default = 7.0, shout = 16.0, whisper = 1.0, current = 0, level = 
 Callbacks = nil
 AddEventHandler('mythic_base:shared:ComponentsReady', function()
     Callbacks = exports['mythic_base']:FetchComponent('Callbacks')
-end)
-
-AddEventHandler('onClientMapStart', function()
-    if voice.current == 0 then
-      NetworkSetTalkerProximity(voice.default)
-    elseif voice.current == 1 then
-      NetworkSetTalkerProximity(voice.shout)
-    elseif voice.current == 2 then
-      NetworkSetTalkerProximity(voice.whisper)
-    end  
 end)
 
 RegisterNetEvent('mythic_characters:client:Logout')
@@ -176,26 +165,24 @@ function UIStuff()
     end)
     
     Citizen.CreateThread(function()
+        local currLevel = 0
         while isLoggedIn do
             Citizen.Wait(1)
             SetPedHelmet(PlayerPedId(), false)
             
             if IsControlJustPressed(1, 74) and IsControlPressed(1, 21) then
-                voice.current = (voice.current + 1) % 3
-                if voice.current == 0 then
-                    NetworkSetTalkerProximity(voice.default)
+                currLevel = (currLevelt + 1) % 3
+                if currLevel == 0 then
                     SendNUIMessage({
                         action = 'set-voice',
                         value = 66
                     })
-                elseif voice.current == 1 then
-                    NetworkSetTalkerProximity(voice.shout)
+                elseif currLevel == 1 then
                     SendNUIMessage({
                         action = 'set-voice',
                         value = 100
                     })
-                elseif voice.current == 2 then
-                    NetworkSetTalkerProximity(voice.whisper)
+                elseif currLevel == 2 then
                     SendNUIMessage({
                         action = 'set-voice',
                         value = 33
@@ -225,8 +212,8 @@ function UIStuff()
     end)
 end
 
-RegisterNetEvent('mythic_engine:client:StartEngineListen')
-AddEventHandler('mythic_engine:client:StartEngineListen', function()
+RegisterNetEvent('mythic_veh:client:EnteringVehicle')
+AddEventHandler('mythic_veh:client:EnteringVehicle', function()
     local player = PlayerPedId()
     local veh = GetVehiclePedIsIn(player)
 
@@ -238,6 +225,8 @@ AddEventHandler('mythic_engine:client:StartEngineListen', function()
                 action = 'showcar'
             })
         end
+
+        DisplayRadar(true)
     
         while IsPedInAnyVehicle(player) do
             Citizen.Wait(1)
@@ -298,6 +287,8 @@ AddEventHandler('mythic_engine:client:StartEngineListen', function()
                 end
             end
         end
+
+        DisplayRadar(false)
     
         seatbeltIsOn = false
         cruiseIsOn = false
@@ -390,12 +381,6 @@ Citizen.CreateThread(function()
         HideHudComponentThisFrame( 3 ) -- SP Cash display 
         HideHudComponentThisFrame( 4 )  -- MP Cash display
         HideHudComponentThisFrame( 13 ) -- Cash changesSetPedHelmet(PlayerPedId(), false)
-
-        if IsPedInAnyVehicle(PlayerPedId()) and showUi then
-            DisplayRadar(true)
-        else
-            DisplayRadar(false)
-        end
 
         if IsControlJustReleased(0, 344) then
             ToggleUI()
