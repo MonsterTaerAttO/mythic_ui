@@ -304,7 +304,7 @@ AddEventHandler('mythic_veh:client:EnteringVehicle', function()
                 if DecorExistOn(veh, 'VEH_FUEL') then
                     SendNUIMessage({
                         action = 'update-fuel',
-                        fuel = math.ceil(round(exports['mythic_fuel']:GetFuel(veh)))
+                        fuel = math.ceil(round(exports['mythic_base']:FetchComponent('Fuel'):GetFuel(veh)))
                     })
                     Citizen.Wait(60000)
                 end
@@ -323,7 +323,7 @@ AddEventHandler('mythic_ui:client:UpdateFuel', function(veh)
     if DecorExistOn(veh, 'VEH_FUEL') then
         SendNUIMessage({
             action = 'update-fuel',
-            fuel = math.ceil(round(exports['mythic_fuel']:GetFuel(veh)))
+            fuel = math.ceil(round(exports['mythic_base']:FetchComponent('Fuel'):GetFuel(veh)))
         })
     end
 end)
