@@ -5,7 +5,7 @@ local hunger = -1
 local thrist = -1
 local inCar = false
 local isLoggedIn = false
-local showUi = true
+local showUi = false
 local prevSpeed = 0
 local currSpeed = 0.0
 local cruiseSpeed = 999.0
@@ -29,9 +29,10 @@ end)
 RegisterNetEvent('mythic_characters:client:Logout')
 AddEventHandler('mythic_characters:client:Logout', function()
     isLoggedIn = false
-    SendNUIMessage({
-        action = 'hideui'
-    })
+
+    if showUi then
+        ToggleUI()
+    end
 end)
 
 RegisterNetEvent('mythic_base:client:CharacterSpawned')
@@ -47,6 +48,7 @@ AddEventHandler('mythic_base:client:CharacterSpawned', function()
         SendNUIMessage({
             action = 'showui'
         })
+        ToggleUI()
         UIStuff()
     end)
 end)
@@ -212,8 +214,8 @@ function UIStuff()
     end)
 end
 
-RegisterNetEvent('mythic_veh:client:EnteringVehicle')
-AddEventHandler('mythic_veh:client:EnteringVehicle', function()
+RegisterNetEvent('mythic_veh:client:EnteredVehicle')
+AddEventHandler('mythic_veh:client:EnteredVehicle', function()
     local player = PlayerPedId()
     local veh = GetVehiclePedIsIn(player)
 
