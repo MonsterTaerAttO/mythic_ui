@@ -116,6 +116,8 @@ window.addEventListener('message', function (event) {
         case 'update-fuel':
             if(event.data.fuel < 100) {
                 $('.fuel-val').html('0' + event.data.fuel);
+            } else if(event.data.fuel < 10) {
+                $('.fuel-val').html('00' + event.data.fuel);
             } else { 
                 $('.fuel-val').html(event.data.fuel);
             }
